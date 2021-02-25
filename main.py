@@ -102,7 +102,7 @@ def main(filename):
                 intersectionMaxStreetTime = int(incomingEdgeStreetTime)
         for _, _, data in DG.in_edges(n, data=True):
             numIncomingIntersections += 1
-            duration = str(assignTimeVal(data['name'], intersectionMaxCarStarts, incomingEdgeStreetHits, incomingEdgeStreetTime))
+            duration = str(assignTimeVal(data['name'], intersectionMaxCarStarts, intersectionMaxStreetHits, intersectionMaxStreetTime))
             orderList.append((data['name'], duration)) # assigning the time value to the street name for our output
 
         incomingStreets.append(numIncomingIntersections)
@@ -126,30 +126,26 @@ def assignTimeVal(streetName, maxCarStarts, maxStreetHits, maxStreetTime):
         starts = carStarts[streetName]
     else: 
         starts = 0
+    
     if maxCarStarts == 0:
         maxCarStarts = 1000000000
-    #else:
-        #print("~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
     if maxStreetHits == 0:
         maxStreetHits = 1000000000
+
     time = streetTimes[streetName]
     startsRatio = float(starts)/float(maxCarStarts)
-    print('starts ratio ', startsRatio)
     hitsRatio = float(hits)/float(maxStreetHits)
     timeRatio = float(time)/float(maxStreetTime)
-    print('hits ratio', hitsRatio)
-    print('time ratio', timeRatio)
-    duration = startsRatio * totalDuration/5 +  hitsRatio * totalDuration/2 + timeRatio * totalDuration/3
+
+    duration = startsRatio * 0.2 +  hitsRatio * 2 + timeRatio
     if (duration < 1):
-        #print("RUH ROH")
         duration = 1
-    else:
-        print("~~~~~~~~~~~~~~~~~~~~~~~~ SCOOBY IS SATISFIED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     return int(duration)
 
 
 if __name__ == "__main__":
     filenames = ["exampleInput.txt", "byTheOcean.txt", "checkmate.txt", "dailyCommute.txt", "etoile.txt", "foreverJammed.txt"]
-    # filenames = ["exampleInput.txt", "byTheOcean.txt"]
+
     for file in filenames: 
         main(file)
