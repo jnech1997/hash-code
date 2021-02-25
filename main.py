@@ -61,10 +61,10 @@ def createGraph(filename):
                     else:
                         carStarts[street] = 1
 
-    return DG, streetHits, carStarts, streetTimes
+    return DG, streetHits, carStarts, street
             
 def main(filename):
-    DG, streetHits, carStarts, streetTimes = createGraph(filename)
+    DG, streetHits, carStarts = createGraph(filename)
     # print("STREET HITS HASHMAP", streetHits)
     sortedStreetHits = sorted(streetHits.items(), key=lambda v: v[1], reverse=True)
     mostHits = sortedStreetHits[0][1]
