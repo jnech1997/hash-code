@@ -1,7 +1,7 @@
 import networkx as nx
 
 def main():
-    G = nx.Graph()
+    DG = nx.DiGraph()
     f = open("exampleInput.txt", "r")
     Lines = f.readlines()
     count = 0
@@ -29,7 +29,9 @@ def main():
             print("start intersection is: ", startIntersect)
             print("end intersection is: ", endIntersect)
             print("streetTime is: ", streetTime)
-            G.add_edge(startIntersect, endIntersect)
+            DG.add_edge(startIntersect, endIntersect)
+            DG[startIntersect][endIntersect]['weight'] = int(streetTime)
+            DG[startIntersect][endIntersect]['name'] = streetName
         else:
             carInfo = line.split()
             numStreetsCarWantsToTravel = carInfo[0]
