@@ -2,6 +2,11 @@ import networkx as nx
 
 from submit import create_submit_file
 
+# HashMap key: streets, val: # of times hit by any path
+streetHits = {}
+carStarts = {}
+streetTimes = {}
+
 def createGraph(filename):
     f = open(filename, "r")
     DG = nx.DiGraph()
@@ -12,12 +17,6 @@ def createGraph(filename):
     numStreets = 0
     numCars = 0
     bonus = 0
-
-    # HashMap key: streets, val: # of times hit by any path
-    streetHits = {}
-    carStarts = {}
-    streetTimes = {}
-
 
     # Strips the newline character
     for line in Lines:
@@ -61,10 +60,10 @@ def createGraph(filename):
                     else:
                         carStarts[street] = 1
 
-    return DG, streetHits, carStarts, streetTimes
+    return DG
             
 def main(filename):
-    DG, streetHits, carStarts, streetTimes = createGraph(filename)
+    DG = createGraph(filename)
     # print("STREET HITS HASHMAP", streetHits)
     sortedStreetHits = sorted(streetHits.items(), key=lambda v: v[1], reverse=True)
     mostHits = sortedStreetHits[0][1]
@@ -81,9 +80,30 @@ def main(filename):
         intersections.append(n)
         numIncomingIntersections = 0
         orderList = []
+        intersectionMaxCarStarts = 0
+        intersectionMaxStreetHits = 0
+        intersectionMaxStreetTime = 0
+        for _, _, data in DG.in_edges(n, data=True):
+            streetName = data['name']
+            if streetName in streetHits:
+                incomingEdgeStreetHits = streetHits[streetName]
+            else:
+                incomingEdgeStreetHits = 0
+            if (incomingEdgeStreetHits > intersectionMaxStreetHits):
+                intersectionMaxStreetHits = incomingEdgeStreetHits
+            if streetName in carStarts:
+                incomingEdgeCarStarts = carStarts[streetName]
+            else: 
+                incomingEdgeCarStarts = 0
+            if (incomingEdgeCarStarts > intersectionMaxCarStarts):
+                intersectionMaxCarStarts = incomingEdgeCarStarts
+            incomingEdgeStreetTime = streetTimes[streetName]
+            if (int(incomingEdgeStreetTime) > intersectionMaxStreetTime):
+                intersectionMaxStreetTime = int(incomingEdgeStreetTime)
         for _, _, data in DG.in_edges(n, data=True):
             numIncomingIntersections += 1
-            orderList.append((data['name'], 1))
+            duration = str(assignTimeVal(data['name'], intersectionMaxCarStarts, incomingEdgeStreetHits, incomingEdgeStreetTime))
+            orderList.append((data['name'], duration)) # assigning the time value to the street name for our output
 
         incomingStreets.append(numIncomingIntersections)
         orders.append(orderList)
@@ -94,10 +114,24 @@ def main(filename):
     # create submission file
     # create_submit_file(filename, numNodes, intersections, incomingStreets, orders)
 
-def assignTimeVal(incomingEdge):
-
-
-
+def assignTimeVal(streetName, maxCarStarts, maxStreetHits, maxStreetTime):
+    if streetName in streetHits:
+        hits = streetHits[streetName]
+    else:
+        hits = 0
+    if streetName in carStarts:
+        starts = carStarts[streetName]
+    else: 
+        starts = 0
+    if maxCarStarts == 0:
+        maxCarStarts = 1000000000
+    if maxStreetHits == 0:
+        maxStreetHits = 1000000000
+    time = streetTimes[streetName]
+    duration = int(int(starts)/int(maxCarStarts) * 1.5) +  int(int(hits)/int(maxStreetHits) * 5) + int(int(time)/int(maxStreetTime) * 3.5)
+    if (duration < 1):
+        duration = 1
+    return duration
 
 
 if __name__ == "__main__":
