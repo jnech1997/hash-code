@@ -24,11 +24,3 @@ def create_submit_file(num_schedule_intersections, intersections, num_incoming_s
             file.write(str(o[0]) + ' ' + str(o[1]) + '\n')
     
     file.close()
-
-        
-if __name__ == "__main__":
-    n = 3
-    ints = [1,0,2]
-    nis = [2,1,1]
-    orders = [[('rue-d-athenes',2), ('rue-d-amsterdam', 1)], [('rue-de-londres', 2)], [('rue-de-moscou', 1)] ]
-    create_submit_file(n,ints,nis,orders)
