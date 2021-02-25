@@ -1,7 +1,9 @@
 import networkx as nx
 
-def createGraph():
-    f = open("exampleInput.txt", "r")
+from submit import create_submit_file
+
+def createGraph(filename):
+    f = open(filename, "r")
     DG = nx.DiGraph()
     Lines = f.readlines()
     count = 0
@@ -40,8 +42,8 @@ def createGraph():
                 #print("streetName car wants to travel is: ", carInfo[i])
     return DG
             
-def main():
-    DG = createGraph()
+def main(filename):
+    DG = createGraph(filename)
     numNodes = DG.number_of_nodes()
     intersections = []
     incomingStreets = []
@@ -66,5 +68,13 @@ def main():
     print("intersections are: ", intersections)
     print("incomingStreets are: ", incomingStreets)
     print("orders are: ", orders)
+
+    # create submission file
+    create_submit_file(filename, numNodes, intersections, incomingStreets, orders)
+
+
+
 if __name__ == "__main__":
-    main()
+    filenames = ["exampleInput.txt", "byTheOcean.txt", "checkmate.txt", "dailyCommute.txt", "etoile.txt", "foreverJammed.txt"]
+    for file in filenames: 
+        main(file)

@@ -9,10 +9,11 @@
 
 
 
-def create_submit_file(num_schedule_intersections, intersections, num_incoming_streets, orders):
-    filename = 'submission.txt'
-
+def create_submit_file(inputFilename, num_schedule_intersections, intersections, num_incoming_streets, orders):
+    filename = inputFilename.split('.')[0] + "Submission.txt"
     file = open(filename,"w")
+
+    print("CREATING FILE", filename)
 
     file.write(str(num_schedule_intersections)+'\n')
     
@@ -24,3 +25,5 @@ def create_submit_file(num_schedule_intersections, intersections, num_incoming_s
             file.write(str(o[0]) + ' ' + str(o[1]) + '\n')
     
     file.close()
+
+    print("FINISHED CREATING FILE", filename)
