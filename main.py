@@ -12,6 +12,13 @@ def createGraph(filename):
     numStreets = 0
     numCars = 0
     bonus = 0
+
+    # HashMap key: streets, val: # of times hit by any path
+    streetHits = {}
+    carStarts = {}
+    streetTimes = {}
+
+
     # Strips the newline character
     for line in Lines:
         count += 1
@@ -34,47 +41,67 @@ def createGraph(filename):
             DG.add_edge(startIntersect, endIntersect)
             DG[startIntersect][endIntersect]['weight'] = int(streetTime)
             DG[startIntersect][endIntersect]['name'] = streetName
+
+            streetTimes[streetName] = streetTime
         else:
             carInfo = line.split()
             numStreetsCarWantsToTravel = carInfo[0]
+            path = carInfo[1:]
             #print("number of streets car wants to travel is: ", numStreetsCarWantsToTravel)
-            #for i in range(1,len(carInfo)):
-                #print("streetName car wants to travel is: ", carInfo[i])
-    return DG
+            for i in range(len(path)):
+                street = path[i]
+                if i > 0:
+                    if street in streetHits:
+                        streetHits[street] += 1
+                    else:
+                        streetHits[street] = 1
+                else:
+                    if street in carStarts:
+                        carStarts[street] += 1
+                    else:
+                        carStarts[street] = 1
+
+    return DG, streetHits, carStarts, streetTimes
             
 def main(filename):
-    DG = createGraph(filename)
+    DG, streetHits, carStarts, streetTimes = createGraph(filename)
+    # print("STREET HITS HASHMAP", streetHits)
+    sortedStreetHits = sorted(streetHits.items(), key=lambda v: v[1], reverse=True)
+    mostHits = sortedStreetHits[0][1]
+    # print("FIRST 10 SORTED STREET HITS", sortedStreetHits[:10])
+    sortedCarStarts = sorted(carStarts.items(), key=lambda v: v[1], reverse=True)
+    mostStarts = sortedCarStarts[0][1]
+    # print("FIRST 10 SORTED CAR STARTS", sortedCarStarts[:10])
+
     numNodes = DG.number_of_nodes()
     intersections = []
     incomingStreets = []
     orders = []
     for n in DG:
-        #print("node id is: ", n)
         intersections.append(n)
         numIncomingIntersections = 0
         orderList = []
-        for u, v, data in DG.in_edges(n, data=True):
+        for _, _, data in DG.in_edges(n, data=True):
             numIncomingIntersections += 1
             orderList.append((data['name'], 1))
-            #print("--------------------")
-            #print("start intersection is: ", u)
-            #print("end intersection is: ", v)
-            #print("data is: ", data)
-            #print("--------------------")
-        # print("numIncoming intersections for node is: ", numIncomingIntersections)
+
         incomingStreets.append(numIncomingIntersections)
         orders.append(orderList)
-    #print("DG is", DG.number_of_nodes())
-    print("intersections are: ", intersections)
-    print("incomingStreets are: ", incomingStreets)
-    print("orders are: ", orders)
+    # print("intersections are: ", intersections)
+    # print("incomingStreets are: ", incomingStreets)
+    # print("orders are: ", orders)
 
     # create submission file
-    create_submit_file(filename, numNodes, intersections, incomingStreets, orders)
+    # create_submit_file(filename, numNodes, intersections, incomingStreets, orders)
+
+def assignTimeVal(incomingEdge):
+
+
 
 
 
 if __name__ == "__main__":
-    filenames = ["exampleInput.txt", "byTheOcean.txt", "checkmate.txt", "dailyCommute.txt", "etoile.txt", "foreverJammed.txt"]
+    # filenames = ["exampleInput.txt", "byTheOcean.txt", "checkmate.txt", "dailyCommute.txt", "etoile.txt", "foreverJammed.txt"]
+    filenames = ["exampleInput.txt", "byTheOcean.txt"]
     for file in filenames: 
         main(file)
